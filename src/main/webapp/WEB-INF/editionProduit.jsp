@@ -1,3 +1,4 @@
+<%@page import="com.sopra.Utilisateur"%>
 <%@page import="com.sopra.Categorie"%>
 <%@page import="com.sopra.Fabricant"%>
 <%@page import="java.util.List"%>
@@ -17,7 +18,8 @@
 	<%Produit produit = (Produit) request.getAttribute("produit"); 
 	List<Fabricant> listeFabricants = (List<Fabricant>) request.getAttribute("listeFabricants");
 	List<Categorie> listeCategories = (List<Categorie>) request.getAttribute("listeCategories");%>
-	
+	<%Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("utilisateurConnecte"); %>
+	Connecte en tant que '<%=utilisateur.getLogin() %>' <a href="login">se deconnecter</a>
 	<h1>Editer produit</h1>
 	
 	<form method="post" action="produits">

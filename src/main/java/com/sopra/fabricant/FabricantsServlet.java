@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.sopra.Fabricant;
 import com.sopra.OutilsGestionMagasin;
+import com.sopra.OutilsGestionUtilisateurs;
 
 @WebServlet("/fabricants")
 public class FabricantsServlet extends HttpServlet {
@@ -20,8 +21,13 @@ public class FabricantsServlet extends HttpServlet {
 	@EJB
 	private OutilsGestionMagasin gestion;
 	
+	@EJB
+	private OutilsGestionUtilisateurs gestionUtilisateurs;
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+
 		List<Fabricant> listeFabricants =gestion.findAllFabricants();
 		req.setAttribute("listeFabricants", listeFabricants);
 		List<Long> nbProduitsFabricants = new ArrayList<>();
@@ -34,6 +40,8 @@ public class FabricantsServlet extends HttpServlet {
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+
 		Fabricant fabricant = gestion.findFabricantById(Integer.parseInt(req.getParameter("idFabricant")));
 		fabricant.setNom(req.getParameter("nouveauNomFabricant"));
 		fabricant.setAdresse(req.getParameter("nouvelleAdresseFabricant"));

@@ -1,3 +1,4 @@
+<%@page import="com.sopra.Utilisateur"%>
 <%@page import="com.sopra.Produit"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -13,8 +14,10 @@
 <body>
 
 <% List<Produit> listeProduits = (List<Produit>) request.getAttribute("listeProduits"); %>
-
+<%Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("utilisateurConnecte"); %>
+Connecte en tant que '<%=utilisateur.getLogin() %>' <a href="login">se deconnecter</a>
 <h1>Liste des produits</h1><br>
+<a href="commandes">Voir mes commandes</a><br><br>
 
 <a href="magasin">Retourner au magasin</a>
 
@@ -34,25 +37,35 @@
 		<td><%=listeProduits.get(i).getCategorie().getNom() %></td>
 		<td><%=listeProduits.get(i).getFabricant().getNom() %></td>
 		
-		<td class="edit-button">
-			<form method='get' action="editionProduit">
-				<input type='hidden' name='produit' value='<%= listeProduits.get(i).getId() %>'/>
-				<button>Editer</button>
+		<%if(utilisateur.isAdmin()){ %>
+			<td class="edit-button">
+				<form method='get' action="editionProduit">
+					<input type='hidden' name='produit' value='<%= listeProduits.get(i).getId() %>'/>
+					<button>Editer</button>
+				</form>
+			</td>
+			<td class="delete-button">
+				<form method='post' action="supprimerProduit">
+					<input type='hidden' name='produitASupprimer' value='<%= listeProduits.get(i).getId() %>'/>
+					<button>X</button>
+				</form>
+			</td>
+		<%} %>
+		<td>
+			<form method='post' action="commandes">
+				<input type="hidden" name="produit" value="<%=listeProduits.get(i).getId() %>">
+				<input type='number' name='quantity' value="1"/>
+				<button>Commander</button>
 			</form>
 		</td>
-		<td class="delete-button">
-			<form method='post' action="supprimerProduit">
-				<input type='hidden' name='produitASupprimer' value='<%= listeProduits.get(i).getId() %>'/>
-				<button>X</button>
-			</form>
-		</td>
+		
 	</tr>
 	<% }%>
 </table>
-
-<form method='get' action="editionProduit">
-	<button>Nouveau produit</button>
-</form>
-
+<%if(utilisateur.isAdmin()){ %>
+	<form method='get' action="editionProduit">
+		<button>Nouveau produit</button>
+	</form>
+<%} %>
 </body>
 </html>

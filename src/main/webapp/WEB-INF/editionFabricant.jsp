@@ -1,3 +1,4 @@
+<%@page import="com.sopra.Utilisateur"%>
 <%@page import="com.sopra.Fabricant"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -12,7 +13,8 @@
 <body>
 
 <%Fabricant fabricant = (Fabricant) request.getAttribute("fabricant"); %>
-
+<%Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("utilisateurConnecte"); %>
+Connecte en tant que '<%=utilisateur.getLogin() %>' <a href="login">se deconnecter</a>
 <h1>Editer fabricant</h1>
 
 <form method="post" action="fabricants">

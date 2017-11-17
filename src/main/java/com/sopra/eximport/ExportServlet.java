@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import com.sopra.Categorie;
 import com.sopra.Fabricant;
 import com.sopra.OutilsGestionMagasin;
+import com.sopra.OutilsGestionUtilisateurs;
 import com.sopra.Produit;
 
 @WebServlet("/export.xls")
@@ -26,10 +27,14 @@ public class ExportServlet extends HttpServlet {
 
 	@EJB
 	private OutilsGestionMagasin gestion;
+	
+	@EJB
+	private OutilsGestionUtilisateurs gestionUtilisateurs;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+		
 		resp.setContentType("application/vnd.ms-excel");
 		resp.setHeader("Content-Disposition", "attachment; filename=magasin.xls");
 		HSSFWorkbook workbook = new HSSFWorkbook();

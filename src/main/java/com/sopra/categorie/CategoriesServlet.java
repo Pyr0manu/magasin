@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.sopra.Categorie;
 import com.sopra.OutilsGestionMagasin;
+import com.sopra.OutilsGestionUtilisateurs;
 
 @WebServlet("/categories")
 public class CategoriesServlet extends HttpServlet {
@@ -20,8 +21,13 @@ public class CategoriesServlet extends HttpServlet {
 	@EJB
 	private OutilsGestionMagasin gestion;
 	
+	@EJB
+	private OutilsGestionUtilisateurs gestionUtilisateurs;
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+		
 		List<Categorie> listeCategories =gestion.findAllCategories();
 		req.setAttribute("listeCategories", listeCategories);
 		List<Long> nbProduitsCategories = new ArrayList<>();
@@ -34,6 +40,8 @@ public class CategoriesServlet extends HttpServlet {
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+		
 		Categorie categorie = gestion.findCategorieById(Integer.parseInt(req.getParameter("idCategorie")));
 		categorie.setNom(req.getParameter("nouveauNomCategorie"));
 		

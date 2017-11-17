@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sopra.OutilsGestionMagasin;
+import com.sopra.OutilsGestionUtilisateurs;
 import com.sopra.Produit;
 
 @WebServlet("/editionProduit")
@@ -18,8 +19,13 @@ public class EditionProduitServlet extends HttpServlet {
 	@EJB
 	private OutilsGestionMagasin gestion;
 
+	@EJB
+	private OutilsGestionUtilisateurs gestionUtilisateurs;
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+		if(!gestionUtilisateurs.getUtilisateurConnecte(req.getSession()).isAdmin()){gestionUtilisateurs.isNotAllowed(req, resp);return;}
 		Produit produit = new Produit();
 		if (req.getParameterMap().containsKey("produit")){
 			produit = gestion.findById(Integer.parseInt(req.getParameter("produit")));

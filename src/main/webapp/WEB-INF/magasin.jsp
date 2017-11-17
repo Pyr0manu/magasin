@@ -1,3 +1,4 @@
+<%@page import="com.sopra.Utilisateur"%>
 <%@page import="com.sopra.Produit"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -11,12 +12,20 @@
 <title>Welcome</title>
 </head>
 <body>
-
-	<h1>Magasin de Manu</h1><br>
+	<%Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("utilisateurConnecte"); %>
+	Connecte en tant que '<%=utilisateur.getLogin() %>' <a href="login">se deconnecter</a><br>
+	<%if(request.getAttribute("isNotAllowed")!=null){ %>
+		<%=request.getAttribute("isNotAllowed") %>
+	<%} %>
+	<h1>Magasin de <%=utilisateur.getLogin() %></h1><br>
+	<a href="commandes">Voir mes commandes</a><br><br>
 	<ul>
 		<li><a href="produits">Acceder a la liste des produits</a></li>
 		<li><a href="fabricants">Acceder a la liste des fabricants</a></li>
 		<li><a href="categories">Acceder a la liste des categories</a></li>
+		<%if(utilisateur.isAdmin()){ %>
+			<li><a href="users">Acceder a la liste des utilisateurs</a></li>
+		<%} %>
 	</ul>
 
 	<form method="post">
@@ -45,16 +54,25 @@
 				<td><%=listeProduits.get(i).getNom() %></td>
 				<td><%=listeProduits.get(i).getCategorie().getNom() %></td>
 				<td><%=listeProduits.get(i).getFabricant().getNom() %></td>
-				<td class="edit-button">
-					<form method='get' action="editionProduit">
-						<input type='hidden' name='produit' value='<%= listeProduits.get(i).getId() %>'/>
-						<button>Editer</button>
-					</form>
-				</td>
-				<td class="delete-button">
-					<form method='post' action="supprimerProduit">
-						<input type='hidden' name='produitASupprimer' value='<%= listeProduits.get(i).getId() %>'/>
-						<button>X</button>
+				<%if (utilisateur.isAdmin()){ %>
+					<td class="edit-button">
+						<form method='get' action="editionProduit">
+							<input type='hidden' name='produit' value='<%= listeProduits.get(i).getId() %>'/>
+							<button>Editer</button>
+						</form>
+					</td>
+					<td class="delete-button">
+						<form method='post' action="supprimerProduit">
+							<input type='hidden' name='produitASupprimer' value='<%= listeProduits.get(i).getId() %>'/>
+							<button>X</button>
+						</form>
+					</td>
+				<%} %>
+				<td>
+					<form method='post' action="commandes">
+						<input type="hidden" name="produit" value="<%=listeProduits.get(i).getId() %>">
+						<input type='number' name='quantity' value="1"/>
+						<button>Commander</button>
 					</form>
 				</td>
 			</tr>

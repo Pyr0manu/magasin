@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sopra.OutilsGestionMagasin;
+import com.sopra.OutilsGestionUtilisateurs;
 import com.sopra.Produit;
 
 @WebServlet("/produits")
@@ -18,14 +19,21 @@ public class ProduitsServlet extends HttpServlet {
 	@EJB
 	private OutilsGestionMagasin gestion;
 	
+	@EJB
+	private OutilsGestionUtilisateurs gestionUtilisateurs;
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+
 		req.setAttribute("listeProduits", gestion.findAllProduits());
 		req.getRequestDispatcher("/WEB-INF/produits.jsp").forward(req, resp);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+
 		Produit produit = gestion.findById(Integer.parseInt(req.getParameter("idProduit")));
 		produit.setNom(req.getParameter("nouveauNomProduit"));
 		produit.setReference(req.getParameter("nouvelleReferenceProduit"));

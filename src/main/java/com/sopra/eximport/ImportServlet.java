@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import com.sopra.Categorie;
 import com.sopra.Fabricant;
 import com.sopra.OutilsGestionMagasin;
+import com.sopra.OutilsGestionUtilisateurs;
 import com.sopra.Produit;
 
 @WebServlet("/import.xls")
@@ -30,9 +31,13 @@ public class ImportServlet extends HttpServlet{
 	@EJB
 	private OutilsGestionMagasin gestion;
 	
+	@EJB
+	private OutilsGestionUtilisateurs gestionUtilisateurs;
+	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+		
 		Part filePart = req.getPart("file");
 	    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
 	    InputStream fileContent = filePart.getInputStream();

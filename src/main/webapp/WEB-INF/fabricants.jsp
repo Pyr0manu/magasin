@@ -1,3 +1,4 @@
+<%@page import="com.sopra.Utilisateur"%>
 <%@page import="com.sopra.OutilsGestionMagasin"%>
 <%@page import="com.sopra.Fabricant"%>
 <%@page import="java.util.List"%>
@@ -15,7 +16,8 @@
 
 <% List<Fabricant> listeFabricants = (List<Fabricant>) request.getAttribute("listeFabricants"); 
 List<Long> nbProduitsFabricants = (List<Long>) request.getAttribute("nbProduitsFabricants");%>
-
+<%Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("utilisateurConnecte"); %>
+Connecte en tant que '<%=utilisateur.getLogin() %>' <a href="login">se deconnecter</a>
 <h1>Liste des fabricants</h1><br>
 
 <a href="magasin">Retourner au magasin</a>
@@ -33,25 +35,28 @@ List<Long> nbProduitsFabricants = (List<Long>) request.getAttribute("nbProduitsF
 		<td><%=listeFabricants.get(i).getNom() %></td>
 		<td><%=listeFabricants.get(i).getAdresse() %></td>
 		<td><%=nbProduitsFabricants.get(i) %></td>
-		<td class="edit-button">
-			<form method='get' action="editionFabricant">
-				<input type='hidden' name='fabricant' value='<%= listeFabricants.get(i).getId() %>'/>
-				<button>Editer</button>
-			</form>
-		</td>
-		<td class="delete-button">
-			<form method='post' action="supprimerFabricant">
-				<input type='hidden' name='fabricantASupprimer' value='<%= listeFabricants.get(i).getId() %>'/>
-				<button>X</button>
-			</form>
-		</td>
+		<%if(utilisateur.isAdmin()){ %>
+			<td class="edit-button">
+				<form method='get' action="editionFabricant">
+					<input type='hidden' name='fabricant' value='<%= listeFabricants.get(i).getId() %>'/>
+					<button>Editer</button>
+				</form>
+			</td>
+			<td class="delete-button">
+				<form method='post' action="supprimerFabricant">
+					<input type='hidden' name='fabricantASupprimer' value='<%= listeFabricants.get(i).getId() %>'/>
+					<button>X</button>
+				</form>
+			</td>
+		<%} %>
 	</tr>
 	<% }%>
 </table>
 
-<form method='get' action="editionFabricant">
-	<button>Nouveau fabricant</button>
-</form>
-
+<%if(utilisateur.isAdmin()){ %>
+	<form method='get' action="editionFabricant">
+		<button>Nouveau fabricant</button>
+	</form>
+<%} %>
 </body>
 </html>

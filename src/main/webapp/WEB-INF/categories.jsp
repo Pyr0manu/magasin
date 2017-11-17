@@ -1,3 +1,4 @@
+<%@page import="com.sopra.Utilisateur"%>
 <%@page import="com.sopra.Categorie"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -14,7 +15,8 @@
 
 <% List<Categorie> listeCategories = (List<Categorie>) request.getAttribute("listeCategories");
 List<Long> nbProduitsCategories = (List<Long>) request.getAttribute("nbProduitsCategories");%>
-
+<%Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("utilisateurConnecte"); %>
+Connecte en tant que '<%=utilisateur.getLogin() %>' <a href="login">se deconnecter</a>
 <h1>Liste des categories</h1><br>
 
 <a href="magasin">Retourner au magasin</a>
@@ -30,25 +32,28 @@ List<Long> nbProduitsCategories = (List<Long>) request.getAttribute("nbProduitsC
 		<td><%=listeCategories.get(i).getId() %></td>
 		<td><%=listeCategories.get(i).getNom() %></td>
 		<td><%=nbProduitsCategories.get(i) %></td>
-		<td class="edit-button">
-			<form method='get' action="editionCategorie">
-				<input type='hidden' name='categorie' value='<%= listeCategories.get(i).getId() %>'/>
-				<button>Editer</button>
-			</form>
-		</td>
-		<td class="delete-button">
-			<form method='post' action="supprimerCategorie">
-				<input type='hidden' name='categorieASupprimer' value='<%= listeCategories.get(i).getId() %>'/>
-				<button>X</button>
-			</form>
-		</td>
+		<%if(utilisateur.isAdmin()){%>
+			<td class="edit-button">
+				<form method='get' action="editionCategorie">
+					<input type='hidden' name='categorie' value='<%= listeCategories.get(i).getId() %>'/>
+					<button>Editer</button>
+				</form>
+			</td>
+			<td class="delete-button">
+				<form method='post' action="supprimerCategorie">
+					<input type='hidden' name='categorieASupprimer' value='<%= listeCategories.get(i).getId() %>'/>
+					<button>X</button>
+				</form>
+			</td>
+		<%} %>
 	</tr>
 	<% }%>
 </table>
 
-<form method='get' action="editionCategorie">
-	<button>Nouvelle categorie</button>
-</form>
-
+<%if(utilisateur.isAdmin()){ %>
+	<form method='get' action="editionCategorie">
+		<button>Nouvelle categorie</button>
+	</form>
+<%} %>
 </body>
 </html>

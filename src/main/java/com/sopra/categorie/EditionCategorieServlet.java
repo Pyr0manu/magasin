@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.sopra.Categorie;
 import com.sopra.OutilsGestionMagasin;
+import com.sopra.OutilsGestionUtilisateurs;
 
 @WebServlet("/editionCategorie")
 public class EditionCategorieServlet extends HttpServlet {
@@ -18,9 +19,13 @@ public class EditionCategorieServlet extends HttpServlet {
 	@EJB
 	private OutilsGestionMagasin gestion;
 
+	@EJB
+	private OutilsGestionUtilisateurs gestionUtilisateurs;
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+		if(!gestionUtilisateurs.correctUserConnected(req.getSession(), resp)){return;}
+		if(!gestionUtilisateurs.getUtilisateurConnecte(req.getSession()).isAdmin()){gestionUtilisateurs.isNotAllowed(req, resp);return;}
 		Categorie categorie = new Categorie();
 		if (req.getParameterMap().containsKey("categorie")) {
 			categorie = gestion.findCategorieById(Integer.parseInt(req.getParameter("categorie")));
